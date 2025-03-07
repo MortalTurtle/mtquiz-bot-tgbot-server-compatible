@@ -13,7 +13,6 @@ import com.bot.mtquizbot.models.Test;
 import com.bot.mtquizbot.models.TestGroup;
 import com.bot.mtquizbot.models.TestResult;
 import com.bot.mtquizbot.models.User;
-import com.bot.mtquizbot.repository.ITestsRepository;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,22 +21,17 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @RequiredArgsConstructor
 public class TestsService extends BaseService {
-    protected final ITestsRepository repo;
 
     public Test create(User owner, TestGroup group, String name, Integer minScore, String description) {
-        log.trace("#### create() [owner={}, group={}, name={}, minScore={}, description={}]",
-                owner, group, name, minScore, description);
-        return repo.create(owner, group, name, minScore, description);
+        throw new UnsupportedOperationException();
     }
 
     public Test getById(String id) {
-        log.trace("#### getById() [id={}]", id);
-        return repo.getById(id);
+        throw new UnsupportedOperationException();
     }
 
     public List<Test> getTestList(TestGroup group) {
-        log.trace("#### getTestList() [group={}]", group);
-        return repo.getTestList(group);
+        throw new UnsupportedOperationException();
     }
 
     public String getTestFullDescription(Test test) {
@@ -46,13 +40,11 @@ public class TestsService extends BaseService {
     }
 
     public List<TestResult> getTestResultList(User user, Integer limit, Integer offset) {
-        log.trace("#### getTestResultList() [user={}, limit={}, offset={}]", user, limit, offset);
-        return repo.getTestResultList(user, limit, offset);
+        throw new UnsupportedOperationException();
     }
 
     public void putTestResult(User user, String testId, Integer score) {
-        log.trace("#### putTestResult() [user={}, testId={}, score={}]", user, testId, score);
-        repo.putTestResult(user, testId, score);
+        throw new UnsupportedOperationException();
     }
 
     public InlineKeyboardMarkup getEditMenu(Test test) {
@@ -69,8 +61,7 @@ public class TestsService extends BaseService {
     public void updateTestProperty(Test test, String propertyName, String strVal) throws NoSuchFieldException,
             IllegalArgumentException,
             NumberFormatException {
-        setNewFieldValueFromString(test, propertyName, strVal);
-        repo.updateTest(test);
+        throw new UnsupportedOperationException();
     }
 
     // TODO: make shorter

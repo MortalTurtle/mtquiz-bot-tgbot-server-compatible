@@ -8,7 +8,6 @@ import com.bot.mtquizbot.models.BotState;
 import com.bot.mtquizbot.models.TestQuestion;
 import com.bot.mtquizbot.models.User;
 import com.bot.mtquizbot.repository.IRedisRepository;
-import com.bot.mtquizbot.repository.IUserRepository;
 import com.bot.mtquizbot.tgbot.IntermediateVariable;
 
 import lombok.RequiredArgsConstructor;
@@ -18,37 +17,30 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @RequiredArgsConstructor
 public class UserService extends BaseService {
-    protected final IUserRepository repo;
     protected final IRedisRepository cache;
 
     public List<User> getUserList() {
-        log.trace("#### getUserList() - working");
-        return repo.getUserList();
+        throw new UnsupportedOperationException();
     }
 
     public User getById(long id) {
-        log.trace("#### getById() [id={}]", id);
-        return repo.getById(Long.toString(id));
+        throw new UnsupportedOperationException();
     }
 
     public User getById(String id) {
-        log.trace("#### getById() [id={}]", id);
-        return repo.getById(id);
+        throw new UnsupportedOperationException();
     }
 
     public void insert(User entity) {
-        log.trace("#### insert() [entity={}]", entity);
-        repo.insert(entity);
+        throw new UnsupportedOperationException();
     }
 
     public void updateGroupById(long id, String groupId) {
-        log.trace("#### updateGroup_id() [group_id={}, user_id={}]", id, groupId);
-        repo.updateGroupById(Long.toString(id), groupId);
+        throw new UnsupportedOperationException();
     }
 
     public void updateGroupById(String id, String groupId) {
-        log.trace("#### updateGroup_id() [group_id={}, user_id={}]", id, groupId);
-        repo.updateGroupById(id, groupId);
+        throw new UnsupportedOperationException();
     }
 
     public BotState getBotState(String userId) {
