@@ -25,13 +25,12 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import com.bot.mtquizbot.exceptions.NegativeNumberException;
 import com.bot.mtquizbot.models.BotState;
-import com.bot.mtquizbot.models.GroupRole;
+import com.bot.mtquizbot.models.QuestionTypeEnum;
 import com.bot.mtquizbot.models.Test;
 import com.bot.mtquizbot.models.TestGroup;
 import com.bot.mtquizbot.models.TestResult;
 import com.bot.mtquizbot.models.User;
 import com.bot.mtquizbot.service.GroupService;
-import com.bot.mtquizbot.service.RoleService;
 import com.bot.mtquizbot.service.TestQuestionService;
 import com.bot.mtquizbot.service.TestsService;
 import com.bot.mtquizbot.service.UserService;
@@ -46,7 +45,6 @@ public class MtQuizBot extends TelegramLongPollingBot {
     private final String botToken;
     private final UserService userService;
     private final GroupService groupService;
-    private final RoleService roleService;
     private final TestsService testsService;
     private final TestQuestionService questionsService;
     private final HashMap<BotState, Consumer<Update>> actionByBotState = new HashMap<>();
@@ -62,14 +60,12 @@ public class MtQuizBot extends TelegramLongPollingBot {
             @Value("${telegram.bot.token}") String botToken,
             UserService userService,
             GroupService groupService,
-            RoleService roleService,
             TestsService testsService,
             TestQuestionService questionService) throws TelegramApiException {
         this.botUsername = botUsername;
         this.botToken = botToken;
         this.userService = userService;
         this.groupService = groupService;
-        this.roleService = roleService;
         this.testsService = testsService;
         this.questionsService = questionService;
         telegramBotsApi.registerBot(this);
@@ -145,6 +141,7 @@ public class MtQuizBot extends TelegramLongPollingBot {
     private void handleQuestionWhileTestPassing(CallbackQuery query, User user, int questionIndex) {
         var questionId = userService.getQuestionId(user.getId(), questionIndex);
         var question = questionsService.getQuestionById(questionId);
+        var userTgId = query.getFrom().getId();
         if (question == null) {
             var prev = userService.getQuestionId(user.getId(), questionIndex - 1);
             if (prev != null)
@@ -152,14 +149,13 @@ public class MtQuizBot extends TelegramLongPollingBot {
             return;
         }
         var questionText = question.getText();
-        var questionType = questionsService.getQuestionTypeById(question.getTypeId());
         InlineKeyboardMarkup keyboard = null;
-        if ("Choose".equals(questionType.getType())) {
+        if (question.getType() == QuestionTypeEnum.ChooseSingle) {
             keyboard = questionsService.getChooseQuestionMenu(question).build();
         } else {
-            userService.putBotState(user.getId(), BotState.waitingForQuestionsAnswer);
+            userService.putBotState(userTgId.toString(), BotState.waitingForQuestionsAnswer);
             if (query != null) {
-                deleteMsg(user.getLongId(), query.getMessage().getMessageId());
+                deleteMsg(userTgId, query.getMessage().getMessageId());
                 query = null;
             }
             questionText += "\nPlease enter your answer.";
@@ -167,15 +163,16 @@ public class MtQuizBot extends TelegramLongPollingBot {
         if (query != null)
             buttonTap(query, questionText, keyboard);
         else if (keyboard != null)
-            sendInlineMenu(user.getLongId(), questionText, keyboard);
+            sendInlineMenu(userTgId, questionText, keyboard);
         else
-            sendText(user.getLongId(), questionText);
+            sendText(userTgId, questionText);
         userService.putCurrentQuestionNum(user.getId(), questionIndex);
     }
 
     private void handleTestEnding(CallbackQuery query, User user, String testId) {
         var score = userService.getUserScore(user.getId(), testId);
         var test = testsService.getById(testId);
+        var userTgId = query.getFrom().getId();
         var scoreString = "Your score is: " + score.toString() + "\n" +
                 "Min score to pass test: " + test.getMin_score().toString() + "\n" +
                 (score >= test.getMin_score() ? "You have passed :)" : "You did not pass :(");
@@ -270,12 +267,7 @@ public class MtQuizBot extends TelegramLongPollingBot {
                 sendText(id, "Wrong group code");
                 return;
             }
-            var user = userService.getById(id);
-            var role = roleService.getUserRole(user, group);
-            if (role == null) {
-                roleService.addUserRole(group, user, GroupRole.Participant);
-            }
-            userService.updateGroupById(id, group.getId());
+            userService.joinGroup(userService.getInternlUserId(id), group.getId());
             actionByCommand.get("/groupinfo").accept(update);
         }
     }
@@ -305,8 +297,7 @@ public class MtQuizBot extends TelegramLongPollingBot {
         var group = groupService.create(
                 userService.getIntermediateVarString(Long.toString(id), IntermediateVariable.GROUP_NAME),
                 msg.getText());
-        userService.updateGroupById(id, group.getId());
-        roleService.addUserRole(group, userService.getById(id), GroupRole.Owner);
+        userService.joinGroup(id, group.getId());
         actionByCommand.get("/groupinfo").accept(update);
     }
 

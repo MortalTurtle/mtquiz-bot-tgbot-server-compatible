@@ -22,8 +22,4 @@ public class User implements IModel {
     public String toString() {
         return id;
     }
-
-    public Long getLongId() {
-        return Long.parseLong(id);
-    }
 }

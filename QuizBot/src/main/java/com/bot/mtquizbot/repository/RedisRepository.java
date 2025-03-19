@@ -22,6 +22,9 @@ public class RedisRepository implements IRedisRepository {
     private static Map<String, BotState> stateByName;
     private static final String BOT_STATE_KEY = "bot_state";
     private static final String CURR_Q_NUM_KEY = "question_num";
+    private static final String API_TOKEN_KEY = "api_token_key";
+    private static final String INTERNAL_ID_KEY = "internal_id_key";
+    private static final String TELEGRAM_ID_KEY = "telegram_id_key";
 
     @Autowired
     public RedisRepository(RedisTemplate<String, Object> redisTemplate) {
@@ -89,5 +92,35 @@ public class RedisRepository implements IRedisRepository {
     @Override
     public void putBotState(String userId, BotState state) {
         hashOperations.put(userId, BOT_STATE_KEY, state.name());
+    }
+
+    @Override
+    public void putApiToken(String userId, String token) {
+        hashOperations.put(userId, API_TOKEN_KEY, token);
+    }
+
+    @Override
+    public String getApiToken(String userId) {
+        return hashOperations.get(userId, API_TOKEN_KEY);
+    }
+
+    @Override
+    public String getUserInternalId(Long userId) {
+        return hashOperations.get(Long.toString(userId), INTERNAL_ID_KEY);
+    }
+
+    @Override
+    public void putUserInternalId(Long userId, String internalId) {
+        hashOperations.put(Long.toString(userId), INTERNAL_ID_KEY, internalId);
+    }
+
+    @Override
+    public Long getUserTelegramId(String internalId) {
+        return Long.parseLong(hashOperations.get(internalId, TELEGRAM_ID_KEY));
+    }
+
+    @Override
+    public void putUserTelegramId(Long userId, String internalId) {
+        hashOperations.put(internalId, TELEGRAM_ID_KEY, userId.toString());
     }
 }

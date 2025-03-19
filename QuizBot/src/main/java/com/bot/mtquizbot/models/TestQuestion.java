@@ -16,8 +16,8 @@ public class TestQuestion implements IModel {
     @JsonProperty("test_id")
     private String testId;
 
-    @JsonProperty("type_id")
-    private String typeId;
+    @JsonProperty("type")
+    private QuestionTypeEnum type;
 
     @CanEditObjectField(getPropertyButtonText = "Correct answer ✅")
     @JsonProperty("answer")

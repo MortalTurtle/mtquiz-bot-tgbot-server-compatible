@@ -7,13 +7,13 @@ import lombok.RequiredArgsConstructor;
 
 @Data
 @RequiredArgsConstructor
-public class QuestionType implements IModel {
-
-    @JsonProperty("id")
-    private final String id;
+public class QuestionType {
 
     @JsonProperty("type")
-    private final String type;
+    private final QuestionTypeEnum type;
+
+    @JsonProperty("name")
+    private final String humanReadableName;
 
     @JsonProperty("description")
     private final String description;

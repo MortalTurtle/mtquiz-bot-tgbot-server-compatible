@@ -19,27 +19,27 @@ import lombok.extern.slf4j.Slf4j;
 public class UserService extends BaseService {
     protected final IRedisRepository cache;
 
-    public List<User> getUserList() {
-        throw new UnsupportedOperationException();
-    }
-
-    public User getById(long id) {
-        throw new UnsupportedOperationException();
-    }
-
     public User getById(String id) {
         throw new UnsupportedOperationException();
     }
 
-    public void insert(User entity) {
+    public User getByUsername(String username) {
         throw new UnsupportedOperationException();
     }
 
-    public void updateGroupById(long id, String groupId) {
+    public void create(String username, String password) {
         throw new UnsupportedOperationException();
     }
 
-    public void updateGroupById(String id, String groupId) {
+    public void updateUser(String apiToken, String username, String password) {
+        throw new UnsupportedOperationException();
+    }
+
+    public void joinGroup(String apiToken, String groupId) {
+        throw new UnsupportedOperationException();
+    }
+
+    public String login(String username, String password) {
         throw new UnsupportedOperationException();
     }
 
@@ -93,4 +93,11 @@ public class UserService extends BaseService {
         return cache.getCurrentQuestionNum(userId);
     }
 
+    public String getInternlUserId(Long userId) {
+        return cache.getUserInternalId(userId);
+    }
+
+    void putUserInternalId(Long userId, String internalId) {
+        cache.putUserInternalId(userId, internalId);
+    }
 }

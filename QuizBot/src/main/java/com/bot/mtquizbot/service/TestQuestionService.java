@@ -9,6 +9,7 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMa
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 
 import com.bot.mtquizbot.models.QuestionType;
+import com.bot.mtquizbot.models.QuestionTypeEnum;
 import com.bot.mtquizbot.models.TestQuestion;
 
 import lombok.RequiredArgsConstructor;
@@ -19,19 +20,31 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class TestQuestionService extends BaseService {
 
-    public List<TestQuestion> getQuestionsByTestId(String testId, int offset, int count) {
+    public List<TestQuestion> getQuestionsByTestId(String apiToken, String testId, int limit, int offset) {
         throw new UnsupportedOperationException();
     }
 
-    public TestQuestion getQuestionById(String questionId) {
+    public TestQuestion getQuestionById(String apiToken, String testId, String questionId) {
         throw new UnsupportedOperationException();
     }
 
-    public TestQuestion addQuestion(String testId, String typeId, Integer weight, String text) {
+    public String addQuestion(String apiToken, String testId, QuestionTypeEnum type, String text, int weight) {
         throw new UnsupportedOperationException();
     }
 
-    public void addFalseAnswer(TestQuestion question, String ansTextString) {
+    public void updateTestQuestion(String apiToken, String testId, String questionId, String text, QuestionTypeEnum type, int weight) {
+        throw new UnsupportedOperationException();
+    }
+
+    public List<String> getAnswers(String apiToken, String questionId, Boolean getFalse) {
+        throw new UnsupportedOperationException();
+    }
+
+    public void addAnswers(String apiToken, String questionId, Boolean getFalse, List<String> answers) {
+        throw new UnsupportedOperationException();
+    }
+
+    public void replaceAllAnswers(String apiToken, String questionId, Boolean getFalse, List<String> answers) {
         throw new UnsupportedOperationException();
     }
 
@@ -60,8 +73,8 @@ public class TestQuestionService extends BaseService {
         List<InlineKeyboardButton> list = new ArrayList<>();
         for (var type : types) {
             list.add(InlineKeyboardButton.builder()
-                    .text(type.getType())
-                    .callbackData("/addquestionstagetype " + type.getId())
+                    .text(type.getHumanReadableName())
+                    .callbackData("/addquestionstagetype " + type.getType().name())
                     .build());
             if (list.size() == typeButtonsInARow) {
                 menu.keyboardRow(list);
@@ -73,17 +86,14 @@ public class TestQuestionService extends BaseService {
         return menu;
     }
 
-    public QuestionType getQuestionTypeById(String id) {
-        throw new UnsupportedOperationException();
-    }
-
     public List<QuestionType> getQuestionTypeList() {
         throw new UnsupportedOperationException();
     }
 
     public InlineKeyboardMarkupBuilder getQuestionEditMenu(TestQuestion question) {
         var menu = BaseService.getEditMenuBuilder(question, "/setqfield");
-        if (this.getQuestionTypeById(question.getTypeId()).getType().equals("Choose"))
+        if (question.getType() == QuestionTypeEnum.ChooseSingle || 
+            question.getType() == QuestionTypeEnum.ChooseMultiple)
             menu.keyboardRow(
                     List.of(
                             InlineKeyboardButton.builder()
@@ -111,14 +121,6 @@ public class TestQuestionService extends BaseService {
                                 .build()));
     }
 
-    public String getFalseAnswersString(TestQuestion question) {
-        throw new UnsupportedOperationException();
-    }
-
-    public List<String> getFalseAnswersStringList(TestQuestion question) {
-        throw new UnsupportedOperationException();
-    }
-
     public String getQuestionDescriptionMessage(TestQuestion question) {
         return question.getText() +
                 "\nAnswer: " + (question.getAnswer() == null ? "No answer, please add one" : question.getAnswer()) +
@@ -128,7 +130,7 @@ public class TestQuestionService extends BaseService {
     public String getQuestionTypeDescriptionMessage(List<QuestionType> types) {
         var strB = new StringBuilder();
         for (var type : types) {
-            strB.append(type.getType() + " - " + type.getDescription() + "\n");
+            strB.append(type.getHumanReadableName() + " - " + type.getDescription() + "\n");
         }
         return strB.toString();
     }
@@ -143,10 +145,6 @@ public class TestQuestionService extends BaseService {
                     "\n");
         }
         return strB.toString();
-    }
-
-    public void updateQuestionProperty(TestQuestion q, String propertyName, String strVal) {
-        throw new UnsupportedOperationException();
     }
 
     public InlineKeyboardMarkupBuilder getChooseQuestionMenu(TestQuestion question) {

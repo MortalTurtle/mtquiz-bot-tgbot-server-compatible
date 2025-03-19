@@ -10,7 +10,3 @@ docker-run:
 .PHONY: docker-clean-data
 docker-clean-data:
 	docker compose down -v
-
-.PHONY: docker-clean-db-data
-docker-clean-db-data:
-	rm -rf .pgdata && rm -rf .redisdata

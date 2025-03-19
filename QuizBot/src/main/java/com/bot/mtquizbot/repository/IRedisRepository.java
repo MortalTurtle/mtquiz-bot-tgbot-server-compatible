@@ -26,4 +26,16 @@ public interface IRedisRepository {
     void putCurrentQuestionNum(String userId, Integer num);
 
     Integer getCurrentQuestionNum(String userId);
+
+    void putApiToken(String userId, String token);
+
+    String getApiToken(String userId);
+
+    String getUserInternalId(Long userId);
+
+    void putUserInternalId(Long userId, String internalId);
+
+    Long getUserTelegramId(String internalId);
+
+    void putUserTelegramId(Long userId, String internalId);
 }

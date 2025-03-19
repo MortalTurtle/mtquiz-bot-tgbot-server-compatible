@@ -1,7 +1,5 @@
 package com.bot.mtquizbot.models;
 
-import java.sql.Timestamp;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.Data;
@@ -19,7 +17,4 @@ public class TestResult {
 
     @JsonProperty("score")
     private final Integer score;
-
-    @JsonProperty("finished_ts")
-    private final Timestamp finishedTs;
 }
